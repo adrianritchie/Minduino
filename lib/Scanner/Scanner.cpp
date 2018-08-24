@@ -1,5 +1,5 @@
 /*
-  DriveControl.h - Library for controlling Minduino drive.
+  Scanner.h - Library for controlling Minduino ultrasonic range finder.
   Created by Adrian Ritchie, February 8, 2017.
 */
 #include "Scanner.h"
