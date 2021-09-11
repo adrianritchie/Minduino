@@ -23,9 +23,9 @@ Scanner myScanner;
 DriveControl myDriver(5, 6, 9, 10, 4);
 bool halting = false;
 
-#define DELAY_SCANNER   300
+#define DELAY_SCANNER   100
 #define DELAY_DRIVER    100
-#define DELAY_HALT      250
+#define DELAY_HALT      100
 AsyncDelay delay_scanner;
 AsyncDelay delay_driver;
 AsyncDelay delay_halt;
@@ -54,8 +54,29 @@ void setup() {
 
 void loop() {
     
+    // myScanner.scan();
+
+    // if (myScanner.obstacle()) {
+    //     Serial.println("OBSTACLE!!!");
+
+    //     switch (myScanner.bestDirection()) {
+    //         case LEFT:
+    //             Serial.println("Go left");
+    //             break;
+    //         case RIGHT:
+    //             Serial.println("Go right");
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    // }
+    // else {
+    //     Serial.println("Go forward");
+    // }
+    // delay(1000);
+
     if (delay_scanner.isExpired()) {
-        myScanner.update();
+        myScanner.scan();
         
         int numLedsToLight = map(myScanner.range(), 0, 200, 0, NUM_LEDS);
         FastLED.clear();
@@ -70,27 +91,29 @@ void loop() {
     
     if (delay_driver.isExpired() && !halting) {
         if (myScanner.obstacle()) {
+            Serial.println("OBSTACLE!!!");
+
             if (myScanner.bestDirection() == LEFT) {
+                Serial.println("Turn Left");
                 myDriver.left();
             } else {
+                Serial.println("Turn Right");
                 myDriver.right();
             }
             halting = true;
             delay_halt.start(DELAY_HALT, AsyncDelay::MILLIS);
         }
         else {
+            Serial.println("Forward");
             myDriver.forward(myScanner.range());
             delay_driver.repeat();
         }
-        
-        Serial.println("driver delay");
     }
     
     if (delay_halt.isExpired() && halting) {
+        Serial.println("Halting");
         halting = false;
         myDriver.halt();
         delay_driver.start(DELAY_DRIVER, AsyncDelay::MILLIS);
-        
-        Serial.println("halt delay");
     }
 }
