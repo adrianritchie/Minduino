@@ -20,6 +20,7 @@ class Scanner
     Scanner();
     void attachServo(int pin);
     void attachSonar(int trigger, int echo);
+    void scan();
     void update();
     bool obstacle();
     int bestDirection();

@@ -6,7 +6,7 @@
 #include "Arduino.h"
 
 #define OBSTACLE_LIMIT  50
-#define SCAN_LIMIT      300
+#define SCAN_LIMIT      200
 
 #define FORWARD_ANGLE   90
 #define LEFT_ANGLE      30
@@ -26,27 +26,38 @@ void Scanner::attachSonar(int triggerPin, int echoPin){
     _sonar = NewPing(triggerPin, echoPin, SCAN_LIMIT);
 }
 
+void Scanner::scan() {
+    update();
+    delay(100);
+    update();
+    delay(100);
+    update();
+}
+
 void Scanner::update(){
     int range = _ping(3);
     
-    Serial.print("Range: ");
-    Serial.println(range);
     
     switch(_angle) {
         case FORWARD_ANGLE:
             _lastForward = range;
             _angle = LEFT_ANGLE;
+            Serial.print("Forward ");
             break;
         case LEFT_ANGLE:
             _lastLeft = range;
             _angle = RIGHT_ANGLE;
+            Serial.print("Left ");
             break;
         case RIGHT_ANGLE:
             _lastRight = range;
             _angle = FORWARD_ANGLE;
+            Serial.print("Right ");
             break;
     }
     
+    Serial.print("Range: ");
+    Serial.println(range);
     
     _servo.write(_angle);
 }
